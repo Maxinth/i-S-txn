@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
-
 import { Skeleton, Button } from "@chakra-ui/react";
 
 interface Transaction {
@@ -30,12 +29,12 @@ const Dashboard: React.FC = () => {
     const fetchTransactions = async () => {
       const response = await fetch("/api/transactions");
       const dataFromResponse: Transaction[] = await response.json();
-      const data = await new Promise<Transaction[]>((resolve) =>
-        setTimeout(() => {
-          //* simulate a delay in fetching data
-          resolve(dataFromResponse);
-          setLoading(false);
-        }, 2000)
+      const data = await new Promise<Transaction[]>(
+        (resolve) =>
+          setTimeout(() => {
+            resolve(dataFromResponse);
+            setLoading(false);
+          }, 2000) // Simulate a delay
       );
       setTransactions(data);
     };
@@ -82,9 +81,15 @@ const Dashboard: React.FC = () => {
           receiver: "",
           amount: 0,
           status: "Pending",
-        }); //* Reset form
+        }); // Reset form
       }, 1000);
     }
+  };
+
+  const statusLookUp = {
+    Pending: "bg-yellow-100",
+    Completed: "bg-green-100",
+    Failed: "bg-red-100",
   };
 
   return (
@@ -92,14 +97,14 @@ const Dashboard: React.FC = () => {
       <div className="flex items-center justify-between flex-wrap lg:flex-nowrap gap-2">
         <h1 className="text-2xl font-bold mb-4 flex-1">
           P2P Transaction Dashboard
-        </h1>{" "}
-        <div className="mb-4 flex items-center justify-end w-full  flex-1">
-          <label className="mr-2 ">Filter by Status:</label>
+        </h1>
+        <div className="mb-4 flex items-center justify-end w-full flex-1">
+          <label className="mr-2">Filter by Status:</label>
           <select
             value={filter}
             disabled={loading || loadingSubmit}
             onChange={(e) => setFilter(e.target.value)}
-            className="border border-gray-300 rounded p-2 "
+            className="border border-gray-300 rounded p-2"
           >
             <option value="All">All</option>
             <option value="Pending">Pending</option>
@@ -110,7 +115,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="my-8 ">
-        <div className="flex  flex-wrap gap-4 lg:gap-2">
+        <div className="flex flex-wrap gap-4 lg:gap-2">
           <input
             type="text"
             name="sender"
@@ -138,13 +143,23 @@ const Dashboard: React.FC = () => {
             required
             className="border border-gray-300 rounded p-2 flex-1"
           />
+          <select
+            name="status"
+            value={newTransaction.status}
+            onChange={handleChange}
+            className="border border-gray-300 rounded p-2 flex-1"
+          >
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+            <option value="Failed">Failed</option>
+          </select>
 
           <Button
             type="submit"
             variant={"surface"}
             disabled={loadingSubmit || loading}
             className={`${
-              !loadingSubmit || !loading
+              !loadingSubmit && !loading
                 ? "bg-blue-500 hover:bg-blue-600 text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-300"
             } rounded p-2 px-4 `}
@@ -153,12 +168,13 @@ const Dashboard: React.FC = () => {
           </Button>
         </div>
       </form>
+
       <div className="overflow-x-auto">
         {loading ? (
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
-              <tr className="bg-gray-200 text-gray-700">
-                <th className="py-2 px-4 border-b">ID</th>
+              <tr className="bg-gray-200 text-gray-700 !font-bold ">
+                <th className="py-2 px-4 border-b ">ID</th>
                 <th className="py-2 px-4 border-b">Sender Name</th>
                 <th className="py-2 px-4 border-b">Receiver Name</th>
                 <th className="py-2 px-4 border-b">Amount</th>
@@ -190,7 +206,7 @@ const Dashboard: React.FC = () => {
         ) : (
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
-              <tr className="bg-gray-200 text-gray-700">
+              <tr className="bg-gray-200 text-gray-700 !font-bold">
                 <th className="py-2 px-4 border-b">ID</th>
                 <th className="py-2 px-4 border-b">Sender Name</th>
                 <th className="py-2 px-4 border-b">Receiver Name</th>
@@ -213,8 +229,16 @@ const Dashboard: React.FC = () => {
                   <td className="py-2 px-4 border-b text-center">
                     {transaction.amount}
                   </td>
-                  <td className="py-2 px-4 border-b text-center">
-                    {transaction.status}
+                  <td className={"py-2 px-4 border-b text-center"}>
+                    <span
+                      className={`px-4 py-2 rounded-lg ${
+                        statusLookUp[
+                          transaction.status as keyof typeof statusLookUp
+                        ]
+                      }`}
+                    >
+                      {transaction.status}
+                    </span>
                   </td>
                 </tr>
               ))}
