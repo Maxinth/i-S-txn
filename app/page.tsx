@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
-import { Button } from "@chakra-ui/react";
-import { Skeleton } from "@chakra-ui/react";
+
+import { Skeleton, Button } from "@chakra-ui/react";
 
 interface Transaction {
   id: number;
@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
           //* simulate a delay in fetching data
           resolve(dataFromResponse);
           setLoading(false);
-        }, 4000)
+        }, 2000)
       );
       setTransactions(data);
     };
@@ -71,15 +71,19 @@ const Dashboard: React.FC = () => {
     });
 
     if (response.ok) {
-      setLoadingSubmit(false);
-      const addedTransaction: Transaction = await response.json();
-      setTransactions((prev) => [...prev, addedTransaction]);
-      setNewTransaction({
-        sender: "",
-        receiver: "",
-        amount: 0,
-        status: "Pending",
-      }); //* Reset form
+      setLoading(true);
+      setTimeout(async () => {
+        setLoadingSubmit(false);
+        setLoading(false);
+        const addedTransaction: Transaction = await response.json();
+        setTransactions((prev) => [...prev, addedTransaction]);
+        setNewTransaction({
+          sender: "",
+          receiver: "",
+          amount: 0,
+          status: "Pending",
+        }); //* Reset form
+      }, 1000);
     }
   };
 
@@ -135,9 +139,13 @@ const Dashboard: React.FC = () => {
           <Button
             type="submit"
             variant={"surface"}
-            className="  bg-blue-500 text-white rounded p-2 px-4 hover:bg-blue-600"
+            className={`${
+              !loadingSubmit
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-300"
+            } rounded p-2 px-4 `}
           >
-            Add Transaction
+            {!loadingSubmit ? "Add Transaction" : "Adding..."}
           </Button>
         </div>
       </form>
@@ -189,11 +197,21 @@ const Dashboard: React.FC = () => {
             <tbody>
               {filteredTransactions.map((transaction) => (
                 <tr key={transaction.id} className="hover:bg-gray-100">
-                  <td className="py-2 px-4 border-b">{transaction.id}</td>
-                  <td className="py-2 px-4 border-b">{transaction.sender}</td>
-                  <td className="py-2 px-4 border-b">{transaction.receiver}</td>
-                  <td className="py-2 px-4 border-b">{transaction.amount}</td>
-                  <td className="py-2 px-4 border-b">{transaction.status}</td>
+                  <td className="py-2 px-4 border-b text-center">
+                    {transaction.id}
+                  </td>
+                  <td className="py-2 px-4 border-b text-center">
+                    {transaction.sender}
+                  </td>
+                  <td className="py-2 px-4 border-b text-center">
+                    {transaction.receiver}
+                  </td>
+                  <td className="py-2 px-4 border-b text-center">
+                    {transaction.amount}
+                  </td>
+                  <td className="py-2 px-4 border-b text-center">
+                    {transaction.status}
+                  </td>
                 </tr>
               ))}
             </tbody>
