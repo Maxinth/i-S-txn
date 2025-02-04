@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import { Button } from "@chakra-ui/react";
+import { Skeleton } from "@chakra-ui/react";
 
 interface Transaction {
   id: number;
@@ -7,11 +9,14 @@ interface Transaction {
   receiver: string;
   amount: number;
   status: string;
-  timestamp?: string; // Optional if you don't need it in the dashboard
+  timestamp?: string;
 }
 
 const Dashboard: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [filter, setFilter] = useState<string>("All");
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [newTransaction, setNewTransaction] = useState<
     Omit<Transaction, "id" | "timestamp">
   >({
@@ -24,7 +29,14 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       const response = await fetch("/api/transactions");
-      const data: Transaction[] = await response.json();
+      const dataFromResponse: Transaction[] = await response.json();
+      const data = await new Promise<Transaction[]>((resolve) =>
+        setTimeout(() => {
+          //* simulate a delay in fetching data
+          resolve(dataFromResponse);
+          setLoading(false);
+        }, 4000)
+      );
       setTransactions(data);
     };
 
@@ -41,7 +53,14 @@ const Dashboard: React.FC = () => {
     }));
   };
 
+  // Filtered transactions based on the selected filter
+  const filteredTransactions =
+    filter === "All"
+      ? transactions
+      : transactions.filter((transaction) => transaction.status === filter);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setLoadingSubmit(true);
     e.preventDefault();
     const response = await fetch("/api/transactions", {
       method: "POST",
@@ -52,6 +71,7 @@ const Dashboard: React.FC = () => {
     });
 
     if (response.ok) {
+      setLoadingSubmit(false);
       const addedTransaction: Transaction = await response.json();
       setTransactions((prev) => [...prev, addedTransaction]);
       setNewTransaction({
@@ -59,14 +79,30 @@ const Dashboard: React.FC = () => {
         receiver: "",
         amount: 0,
         status: "Pending",
-      }); // Reset form
+      }); //* Reset form
     }
   };
 
   return (
-    <div className="container mx-auto p-4 ">
-      <h1 className="text-2xl font-bold mb-4">P2P Transaction Dashboard</h1>
-      <form onSubmit={handleSubmit} className="mb-4">
+    <div className="container mx-auto p-4 my-12 ">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold mb-4">P2P Transaction Dashboard</h1>{" "}
+        <div className="mb-4">
+          <label className="mr-2">Filter by Status:</label>
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="border border-gray-300 rounded p-2"
+          >
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+            <option value="Failed">Failed</option>
+          </select>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mb-4 hiddden">
         <div className="flex space-x-2">
           <input
             type="text"
@@ -95,47 +131,74 @@ const Dashboard: React.FC = () => {
             required
             className="border border-gray-300 rounded p-2 flex-1"
           />
-          <select
-            name="status"
-            value={newTransaction.status}
-            onChange={handleChange}
-            className="border border-gray-300 rounded p-2 flex-1"
-          >
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-            <option value="Failed">Failed</option>
-          </select>
-          <button
+
+          <Button
             type="submit"
-            className="bg-blue-500 text-white rounded p-2 hover:bg-blue-600"
+            variant={"surface"}
+            className="  bg-blue-500 text-white rounded p-2 px-4 hover:bg-blue-600"
           >
             Add Transaction
-          </button>
+          </Button>
         </div>
       </form>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-200 text-gray-700">
-              <th className="py-2 px-4 border-b">ID</th>
-              <th className="py-2 px-4 border-b">Sender Name</th>
-              <th className="py-2 px-4 border-b">Receiver Name</th>
-              <th className="py-2 px-4 border-b">Amount</th>
-              <th className="py-2 px-4 border-b">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction) => (
-              <tr key={transaction.id} className="hover:bg-gray-100">
-                <td className="py-2 px-4 border-b">{transaction.id}</td>
-                <td className="py-2 px-4 border-b">{transaction.sender}</td>
-                <td className="py-2 px-4 border-b">{transaction.receiver}</td>
-                <td className="py-2 px-4 border-b">{transaction.amount}</td>
-                <td className="py-2 px-4 border-b">{transaction.status}</td>
+        {loading ? (
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200 text-gray-700">
+                <th className="py-2 px-4 border-b">ID</th>
+                <th className="py-2 px-4 border-b">Sender Name</th>
+                <th className="py-2 px-4 border-b">Receiver Name</th>
+                <th className="py-2 px-4 border-b">Amount</th>
+                <th className="py-2 px-4 border-b">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <tr key={index} className="hover:bg-gray-100">
+                  <td className="py-2 px-4 border-b">
+                    <Skeleton height="5" />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <Skeleton height="5" />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <Skeleton height="5" />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <Skeleton height="5" />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <Skeleton height="5" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200 text-gray-700">
+                <th className="py-2 px-4 border-b">ID</th>
+                <th className="py-2 px-4 border-b">Sender Name</th>
+                <th className="py-2 px-4 border-b">Receiver Name</th>
+                <th className="py-2 px-4 border-b">Amount</th>
+                <th className="py-2 px-4 border-b">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTransactions.map((transaction) => (
+                <tr key={transaction.id} className="hover:bg-gray-100">
+                  <td className="py-2 px-4 border-b">{transaction.id}</td>
+                  <td className="py-2 px-4 border-b">{transaction.sender}</td>
+                  <td className="py-2 px-4 border-b">{transaction.receiver}</td>
+                  <td className="py-2 px-4 border-b">{transaction.amount}</td>
+                  <td className="py-2 px-4 border-b">{transaction.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
