@@ -89,14 +89,17 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 my-12 ">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold mb-4">P2P Transaction Dashboard</h1>{" "}
-        <div className="mb-4">
-          <label className="mr-2">Filter by Status:</label>
+      <div className="flex items-center justify-between flex-wrap lg:flex-nowrap gap-2">
+        <h1 className="text-2xl font-bold mb-4 flex-1">
+          P2P Transaction Dashboard
+        </h1>{" "}
+        <div className="mb-4 flex items-center justify-end w-full  flex-1">
+          <label className="mr-2 ">Filter by Status:</label>
           <select
             value={filter}
+            disabled={loading || loadingSubmit}
             onChange={(e) => setFilter(e.target.value)}
-            className="border border-gray-300 rounded p-2"
+            className="border border-gray-300 rounded p-2 "
           >
             <option value="All">All</option>
             <option value="Pending">Pending</option>
@@ -106,8 +109,8 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="mb-4 hiddden">
-        <div className="flex space-x-2">
+      <form onSubmit={handleSubmit} className="my-8 ">
+        <div className="flex  flex-wrap gap-4 lg:gap-2">
           <input
             type="text"
             name="sender"
@@ -139,8 +142,9 @@ const Dashboard: React.FC = () => {
           <Button
             type="submit"
             variant={"surface"}
+            disabled={loadingSubmit || loading}
             className={`${
-              !loadingSubmit
+              !loadingSubmit || !loading
                 ? "bg-blue-500 hover:bg-blue-600 text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-300"
             } rounded p-2 px-4 `}
@@ -162,7 +166,7 @@ const Dashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {Array.from({ length: 6 }).map((_, index) => (
+              {Array.from({ length: 2 }).map((_, index) => (
                 <tr key={index} className="hover:bg-gray-100">
                   <td className="py-2 px-4 border-b">
                     <Skeleton height="5" />
