@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Provider } from "@/components/ui/provider";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "P2P dashboard",
@@ -14,11 +15,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <Provider defaultTheme="light" attribute="class">
-          {children}
-        </Provider>
-      </body>
+      <ThemeProvider attribute="class">
+        <body>
+          <Provider defaultTheme="light" attribute="class">
+            {children}
+          </Provider>
+        </body>
+      </ThemeProvider>
     </html>
   );
 }

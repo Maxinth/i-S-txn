@@ -36,14 +36,20 @@ const TransactionDetails = () => {
     return <Text>Transaction not found.</Text>;
   }
 
+  const statusColorLookUP: { [key: string]: string } = {
+    Pending: "orange",
+    Completed: "green",
+    Failed: "red",
+  };
+
   return (
     <Box
       p={6}
       borderWidth={1}
       borderRadius="lg"
       boxShadow="lg"
-      bg="white"
-      className="max-w-2xl mx-auto my-48"
+      // bg="white"
+      className="max-w-2xl mx-auto my-48 bg-white dark:bg-gray-900"
     >
       <Text
         fontSize="3xl"
@@ -71,8 +77,9 @@ const TransactionDetails = () => {
         <Text fontSize="lg">
           <strong>Status:</strong>{" "}
           <span
+            className="px-4 py-1 rounded-md"
             style={{
-              color: transaction.status === "Completed" ? "green" : "red",
+              color: statusColorLookUP[transaction.status] || "inherit",
             }}
           >
             {transaction.status}
@@ -99,5 +106,4 @@ const TransactionDetails = () => {
     </Box>
   );
 };
-
 export default TransactionDetails;

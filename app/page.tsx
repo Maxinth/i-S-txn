@@ -2,6 +2,7 @@
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { Skeleton, Button } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/p2p-custom/ThemeToggle";
 
 export interface Transaction {
   id: number;
@@ -108,9 +109,10 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 my-12 ">
-      <div className="flex items-center justify-between flex-wrap lg:flex-nowrap gap-2">
-        <h1 className="text-2xl font-bold mb-4 flex-1 text-teal-600">
+    <div className="container mx-auto p-4 my-12 bg-gray-100 dark:bg-black rounded-lg shadow-lg">
+      <ThemeToggle />
+      <div className="flex items-center justify-between flex-wrap sm:flex-nowrap gap-2 my-4">
+        <h1 className="text-2xl font-bold mb-4  text-teal-600 flex-1">
           P2P Transaction Dashboard
         </h1>
         <div className="mb-4 flex items-center justify-end w-full flex-1">
@@ -219,9 +221,9 @@ const Dashboard: React.FC = () => {
             </tbody>
           </table>
         ) : (
-          <table className="min-w-full bg-white border border-gray-300">
+          <table className="min-w-full bg-white dark:!bg-dark border border-gray-300 dark:border-gray-900">
             <thead>
-              <tr className="bg-gray-200 text-gray-700 !font-bold">
+              <tr className="bg-gray-200 dark:!bg-gray-900 dark:text-gray-100 text-gray-700 !font-bold">
                 <th className="py-2 px-4 border-b">ID</th>
                 <th className="py-2 px-4 border-b">Sender Name</th>
                 <th className="py-2 px-4 border-b">Receiver Name</th>
@@ -233,7 +235,7 @@ const Dashboard: React.FC = () => {
               {filteredTransactions?.map((transaction) => (
                 <tr
                   key={transaction.id}
-                  className="hover:bg-gray-100 cursor-pointer"
+                  className="hover:bg-gray-100 cursor-pointer  dark:!bg-gray-900 dark:text-gray-100 text-gray-700"
                   onClick={() => handleNavigate(transaction.id)}
                 >
                   <td className="py-2 px-4 border-b text-center">
@@ -249,7 +251,11 @@ const Dashboard: React.FC = () => {
                   <td className="py-2 px-4 border-b text-center">
                     {transaction.amount}
                   </td>
-                  <td className={"py-2 px-4 border-b text-center"}>
+                  <td
+                    className={
+                      "py-2 px-4 border-b text-center dark:text-gray-900"
+                    }
+                  >
                     <span
                       className={`px-4 py-2 rounded-lg ${
                         statusLookUp[
