@@ -1,11 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { transactions } from "@/components/data";
-//* GET a transaction by ID
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id);
+export async function GET(request: NextRequest) {
+  const paramsId = request.nextUrl.pathname.split("/")[3];
 
-  const transaction = transactions.find((t: { id: number }) => t.id === id);
+  const transactionId = parseInt(paramsId, 10);
+  const transaction = transactions.find((t) => t.id === transactionId);
+
   if (!transaction) {
     return NextResponse.json(
       { message: "Transaction not found" },
