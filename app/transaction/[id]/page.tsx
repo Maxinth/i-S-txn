@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Box, Text, Button } from "@chakra-ui/react";
+import { Box, Text, Button, VStack } from "@chakra-ui/react";
 import { Transaction } from "@/app/page";
 import { useParams, useRouter } from "next/navigation";
 
@@ -37,34 +37,65 @@ const TransactionDetails = () => {
   }
 
   return (
-    <Box p={4}>
-      <Text fontSize="2xl" fontWeight="bold">
+    <Box
+      p={6}
+      borderWidth={1}
+      borderRadius="lg"
+      boxShadow="lg"
+      bg="white"
+      className="max-w-2xl mx-auto my-48"
+    >
+      <Text
+        fontSize="3xl"
+        fontWeight="bold"
+        color="teal.600"
+        className="text-center"
+      >
         Transaction Details
       </Text>
-      <Text mt={2}>
-        <strong>ID:</strong> {transaction.id}
-      </Text>
-      <Text>
-        <strong>Sender:</strong> {transaction.sender}
-      </Text>
-      <Text>
-        <strong>Receiver:</strong> {transaction.receiver}
-      </Text>
-      <Text>
-        <strong>Amount:</strong> ${transaction.amount}
-      </Text>
-      <Text>
-        <strong>Status:</strong> {transaction.status}
-      </Text>
-      <Text>
-        <strong>Timestamp:</strong>{" "}
-        {transaction.timestamp
-          ? new Date(transaction.timestamp).toLocaleString()
-          : "N/A"}
-      </Text>
-      <Button mt={4} onClick={handleBackNavigation}>
-        Go Back
-      </Button>
+
+      <Box my={4} height="1px" bg="gray.200" />
+      <VStack alignItems="start">
+        <Text fontSize="lg">
+          <strong>ID:</strong> {transaction.id}
+        </Text>
+        <Text fontSize="lg">
+          <strong>Sender:</strong> {transaction.sender}
+        </Text>
+        <Text fontSize="lg">
+          <strong>Receiver:</strong> {transaction.receiver}
+        </Text>
+        <Text fontSize="lg">
+          <strong>Amount:</strong> ${transaction.amount.toFixed(2)}
+        </Text>
+        <Text fontSize="lg">
+          <strong>Status:</strong>{" "}
+          <span
+            style={{
+              color: transaction.status === "Completed" ? "green" : "red",
+            }}
+          >
+            {transaction.status}
+          </span>
+        </Text>
+        <Text fontSize="lg">
+          <strong>Timestamp:</strong>{" "}
+          {transaction.timestamp
+            ? new Date(transaction.timestamp).toLocaleString()
+            : "N/A"}
+        </Text>
+      </VStack>
+      <Box className="w-full flex items-center justify-center">
+        {" "}
+        <Button
+          mt={6}
+          colorScheme="teal"
+          onClick={handleBackNavigation}
+          className="text-center bg-teal-500 px-6 py-2 text-white font-medium hover:bg-white hover:text-teal-600 border border-transparent hover:border-teal-600 duration-300 ease-in-out "
+        >
+          Go Back
+        </Button>
+      </Box>
     </Box>
   );
 };

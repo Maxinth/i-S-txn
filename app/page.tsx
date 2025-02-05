@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="container mx-auto p-4 my-12 ">
       <div className="flex items-center justify-between flex-wrap lg:flex-nowrap gap-2">
-        <h1 className="text-2xl font-bold mb-4 flex-1">
+        <h1 className="text-2xl font-bold mb-4 flex-1 text-teal-600">
           P2P Transaction Dashboard
         </h1>
         <div className="mb-4 flex items-center justify-end w-full flex-1">
@@ -175,7 +175,7 @@ const Dashboard: React.FC = () => {
             disabled={loadingSubmit || loading}
             className={`${
               !loadingSubmit && !loading
-                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                ? "bg-teal-600 hover:bg-teal-500 text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-300"
             } rounded p-2 px-4 `}
           >
