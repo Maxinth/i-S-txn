@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Box, Text, Button, VStack } from "@chakra-ui/react";
-import { Transaction } from "@/app/page";
+import { Transaction } from "@/app/dashboard/page";
 import { useParams, useRouter } from "next/navigation";
 
 const TransactionDetails = () => {
@@ -11,7 +11,7 @@ const TransactionDetails = () => {
   const { id } = useParams();
   const router = useRouter();
 
-  const handleBackNavigation = () => router.push(`/`);
+  const handleBackNavigation = () => router.push(`/dashboard`);
   useEffect(() => {
     if (id) {
       const fetchTransaction = async () => {
