@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { Skeleton, Button } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
-interface Transaction {
+export interface Transaction {
   id: number;
   sender: string;
   receiver: string;
@@ -24,6 +25,12 @@ const Dashboard: React.FC = () => {
     amount: 0,
     status: "Pending",
   });
+
+  const router = useRouter();
+
+  const handleNavigate = (id: number) => {
+    router.push(`/transaction/${id}`);
+  };
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -52,7 +59,7 @@ const Dashboard: React.FC = () => {
     }));
   };
 
-  // Filtered transactions based on the selected filter
+  //* Filtered transactions based on the selected filter
   const filteredTransactions =
     filter === "All"
       ? transactions
@@ -70,12 +77,20 @@ const Dashboard: React.FC = () => {
     });
 
     if (response.ok) {
+      router.refresh();
       setLoading(true);
       setTimeout(async () => {
         setLoadingSubmit(false);
         setLoading(false);
         const addedTransaction: Transaction = await response.json();
-        setTransactions((prev) => [...prev, addedTransaction]);
+        setTransactions((prev) => {
+          const updatedTransactions = [...prev, addedTransaction];
+          localStorage.setItem(
+            "transactions",
+            JSON.stringify(updatedTransactions)
+          );
+          return updatedTransactions;
+        });
         setNewTransaction({
           sender: "",
           receiver: "",
@@ -173,7 +188,7 @@ const Dashboard: React.FC = () => {
         {loading ? (
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
-              <tr className="bg-gray-200 text-gray-700 !font-bold ">
+              <tr className="bg-gray-200 text-gray-700 !font-bold">
                 <th className="py-2 px-4 border-b ">ID</th>
                 <th className="py-2 px-4 border-b">Sender Name</th>
                 <th className="py-2 px-4 border-b">Receiver Name</th>
@@ -215,11 +230,16 @@ const Dashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-gray-100">
+              {filteredTransactions?.map((transaction) => (
+                <tr
+                  key={transaction.id}
+                  className="hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleNavigate(transaction.id)}
+                >
                   <td className="py-2 px-4 border-b text-center">
                     {transaction.id}
                   </td>
+
                   <td className="py-2 px-4 border-b text-center">
                     {transaction.sender}
                   </td>
