@@ -110,12 +110,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 my-12 bg-gray-100 dark:bg-black rounded-lg shadow-lg">
-      <ThemeToggle />
       <div className="flex items-center justify-between flex-wrap sm:flex-nowrap gap-2 my-4">
-        <h1 className="text-2xl font-bold mb-4  text-teal-600 flex-1">
+        <h1 className="text-2xl font-bold   text-teal-600 flex-1">
           P2P Transaction Dashboard
         </h1>
-        <div className="mb-4 flex items-center justify-end w-full flex-1">
+        <ThemeToggle />
+        <div className=" flex items-center justify-end w-full flex-1">
           <label className="mr-2">Filter by Status:</label>
           <select
             value={filter}

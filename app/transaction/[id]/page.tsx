@@ -29,7 +29,11 @@ const TransactionDetails = () => {
   }, [id]);
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return (
+      <Box className="flex items-center justify-center h-screen">
+        <span className="loader"></span>
+      </Box>
+    );
   }
 
   if (!transaction) {
